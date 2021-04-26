@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+    # First service is app
+    app:
+        build:
+            context: .
+        # Mapping port 8000 on machine to port 8000 in the docker (right is docker)
+        ports:
+            - "8000:8000"
+        # Volumes mounts the directory so changes to the code are live
+        volumes:
+            - ./app:/app
+        # Command used to run our application
+        # This will run the django development server available on all ip addresses 
+        # that run on the docker container, on port 8000, that will be mapped locally
+        command: >
+            sh -c "python manage.py runserver 0.0.0.0:8000"
+
