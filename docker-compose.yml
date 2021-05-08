@@ -12,8 +12,26 @@ services:
         volumes:
             - ./app:/app
         # Command used to run our application
-        # This will run the django development server available on all ip addresses 
+        # This will run the django development server available on all ip addresses
         # that run on the docker container, on port 8000, that will be mapped locally
         command: >
-            sh -c "python manage.py runserver 0.0.0.0:8000"
+            sh -c  "python manage.py wait_for_db &&
+                    python manage.py migrate &&
+                    python manage.py runserver 0.0.0.0:8000"
+        environment:
+            - DB_HOST=db
+            - DB_NAME=app
+            - DB_USER=postgres
+            - DB_PASSWORD=secretpassword
+        # db will start first and db will be available via the network when you use the
+        # hostname 'db'
+        depends_on:
+            - db
+    db:
+        # Locates postgres image and downloads version 10-alpine
+        image: postgres:10-alpine
+        environment:
+            - POSTGRES_DB=app
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=secretpassword
 
